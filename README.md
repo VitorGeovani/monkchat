@@ -1,7 +1,7 @@
 # MonkChat
 
 <div align="center">
-    <img src="/public/assets/images/logo-monkchat.png" alt="MonkChat Logo" width="150" />
+    <img src="/frontend/public/assets/images/logo-monkchat.png" alt="MonkChat Logo" width="150" />
     <h3>Uma aplicação de chat em tempo real moderna e intuitiva</h3>
 </div>
 
