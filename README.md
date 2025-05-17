@@ -1,4 +1,4 @@
-# MonkChat Frontend
+# MonkChat
 
 <div align="center">
     <img src="/public/assets/images/logo-monkchat.png" alt="MonkChat Logo" width="150" />
