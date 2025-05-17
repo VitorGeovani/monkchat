@@ -149,111 +149,120 @@ export default function Conteudo() {
     return false;
   };
 
-  // Função para formatar a data/hora
+  // Função para formatar a data/hora no horário de Brasília
   const formatarDataHora = (dataString) => {
     try {
-      const data = new Date(dataString.replace("Z", ""));
-      const hora = data.getHours().toString().padStart(2, "0");
-      const minuto = data.getMinutes().toString().padStart(2, "0");
-      const segundo = data.getSeconds().toString().padStart(2, "0");
-      return `(${hora}:${minuto}:${segundo})`;
+      // Criar um objeto Date a partir da string
+      const data = new Date(dataString);
+
+      // Formatar a data usando o fuso horário de Brasília
+      const horario = data.toLocaleTimeString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+      return `(${horario})`;
     } catch (error) {
+      console.error("Erro ao formatar data:", error);
       return "(00:00:00)";
     }
   };
 
   // Função para determinar se a mensagem deve ser exibida
-const mensagemVisivel = (mensagem) => {
-  if (!mensagem) return false;
+  const mensagemVisivel = (mensagem) => {
+    if (!mensagem) return false;
 
-  const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
+    const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
 
-  // Se é mensagem de entrada na sala, sempre mostrar
-  if (mensagem.TP_MENSAGEM === "entrada") return true;
+    // Se é mensagem de entrada na sala, sempre mostrar
+    if (mensagem.TP_MENSAGEM === "entrada") return true;
 
-  // Se é para todos, mostrar
-  if (!mensagem.ID_USUARIO_PARA) return true;
+    // Se é para todos, mostrar
+    if (!mensagem.ID_USUARIO_PARA) return true;
 
-  // Se é para o usuário logado, mostrar
-  if (String(mensagem.ID_USUARIO_PARA) === String(userId)) return true;
+    // Se é para o usuário logado, mostrar
+    if (String(mensagem.ID_USUARIO_PARA) === String(userId)) return true;
 
-  // Se foi enviada pelo usuário logado, mostrar
-  if (String(mensagem.ID_USUARIO_ENVIO) === String(userId)) return true;
+    // Se foi enviada pelo usuário logado, mostrar
+    if (String(mensagem.ID_USUARIO_ENVIO) === String(userId)) return true;
 
-  // Nos outros casos, não mostrar
-  return false;
-};
+    // Nos outros casos, não mostrar
+    return false;
+  };
 
-// função para iniciar a edição de uma mensagem
-const iniciarEdicao = (mensagem) => {
-  // Verifica se o usuário pode editar esta mensagem
-  const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
-  if (String(mensagem.ID_USUARIO_ENVIO) !== String(userId)) {
-    toast.warning("Você só pode editar suas próprias mensagens");
-    return;
-  }
-
-  // Verificar se não é mensagem de entrada
-  if (mensagem.TP_MENSAGEM === "entrada") {
-    toast.warning("Não é possível editar mensagens de entrada");
-    return;
-  }
-
-  // Configurar estados para edição
-  setEditandoMensagem(mensagem);
-  setMensagemAtual(mensagem.DS_MENSAGEM);
-
-  // Rolar para o final da tela para mostrar o input de edição
-  setTimeout(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  // função para iniciar a edição de uma mensagem
+  const iniciarEdicao = (mensagem) => {
+    // Verifica se o usuário pode editar esta mensagem
+    const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
+    if (String(mensagem.ID_USUARIO_ENVIO) !== String(userId)) {
+      toast.warning("Você só pode editar suas próprias mensagens");
+      return;
     }
-  }, 100);
-};
 
-// função para salvar a mensagem editada
-const salvarEdicao = async () => {
-  if (!mensagemAtual.trim()) {
-    toast.error("A mensagem não pode ser vazia");
-    return;
-  }
+    // Verificar se não é mensagem de entrada
+    if (mensagem.TP_MENSAGEM === "entrada") {
+      toast.warning("Não é possível editar mensagens de entrada");
+      return;
+    }
 
-  try {
-    // Chamar API para atualizar a mensagem
-    const resp = await api.atualizarMensagem(
-      editandoMensagem.ID_MENSAGEM,
-      mensagemAtual
-    );
+    // Configurar estados para edição
+    setEditandoMensagem(mensagem);
+    setMensagemAtual(mensagem.DS_MENSAGEM);
 
-    if (!validarResposta(resp)) return;
+    // Rolar para o final da tela para mostrar o input de edição
+    setTimeout(() => {
+      if (chatRef.current) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
+    }, 100);
+  };
 
-    // Atualizar o chat localmente para refletir a alteração
-    const novoChat = chat.map((msg) =>
-      msg.ID_MENSAGEM === editandoMensagem.ID_MENSAGEM
-        ? { ...msg, DS_MENSAGEM: mensagemAtual }
-        : msg
-    );
+  // função para salvar a mensagem editada
+  const salvarEdicao = async () => {
+    if (!mensagemAtual.trim()) {
+      toast.error("A mensagem não pode ser vazia");
+      return;
+    }
 
-    setChat(novoChat);
-    toast.success("Mensagem atualizada com sucesso!");
-    cancelarEdicao();
-  } catch (error) {
-    console.error("Erro ao atualizar mensagem:", error);
-    toast.error("Erro ao atualizar mensagem");
-  }
-};
+    try {
+      // Chamar API para atualizar a mensagem
+      const resp = await api.atualizarMensagem(
+        editandoMensagem.ID_MENSAGEM,
+        mensagemAtual
+      );
 
-// função para cancelar a edição de uma mensagem
-const cancelarEdicao = (e) => {
-  // Impedir propagação do evento para evitar conflitos
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  
-  setEditandoMensagem(null);
-  setMensagemAtual("");
-};
+      if (!validarResposta(resp)) return;
+
+      // Atualizar o chat localmente para refletir a alteração
+      const novoChat = chat.map((msg) =>
+        msg.ID_MENSAGEM === editandoMensagem.ID_MENSAGEM
+          ? { ...msg, DS_MENSAGEM: mensagemAtual }
+          : msg
+      );
+
+      setChat(novoChat);
+      toast.success("Mensagem atualizada com sucesso!");
+      cancelarEdicao();
+    } catch (error) {
+      console.error("Erro ao atualizar mensagem:", error);
+      toast.error("Erro ao atualizar mensagem");
+    }
+  };
+
+  // função para cancelar a edição de uma mensagem
+  const cancelarEdicao = (e) => {
+    // Impedir propagação do evento para evitar conflitos
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    setEditandoMensagem(null);
+    setMensagemAtual("");
+  };
 
   const enviarMensagem = async () => {
     if (!salaAtiva) {
@@ -451,11 +460,11 @@ const cancelarEdicao = (e) => {
 
   const renderizarMensagem = (x) => {
     if (!x) return null;
-  
+
     const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
     // Convertendo para consistência na comparação
     const isUsuarioAtual = String(x.ID_USUARIO_ENVIO) === String(userId);
-  
+
     if (x.TP_MENSAGEM === "entrada") {
       return (
         <div className="chat-message" key={x.ID_MENSAGEM}>
@@ -476,7 +485,7 @@ const cancelarEdicao = (e) => {
       );
     } else {
       let destinatario;
-  
+
       if (!x.ID_USUARIO_PARA) {
         destinatario = "Todos";
       } else if (x.NM_USUARIO_PARA === "Somente eu") {
@@ -484,7 +493,7 @@ const cancelarEdicao = (e) => {
       } else {
         destinatario = x.NM_USUARIO_PARA || "Usuário";
       }
-  
+
       return (
         <div
           className={`chat-message ${isUsuarioAtual ? "minha-mensagem" : ""} ${
@@ -504,7 +513,7 @@ const cancelarEdicao = (e) => {
               fala para{" "}
               <strong style={{ color: "#fff" }}>{destinatario}</strong>:
             </span>
-  
+
             {isUsuarioAtual && (
               <span className="message-actions">
                 <i className="edit-icon">✏️</i>
@@ -512,65 +521,66 @@ const cancelarEdicao = (e) => {
             )}
           </div>
           <div className="message-content">{x.DS_MENSAGEM}</div>
-  
+
           {/* Input de edição inline */}
-          {editandoMensagem && editandoMensagem.ID_MENSAGEM === x.ID_MENSAGEM && (
-            <div className="edit-inline">
-              <input
-                type="text"
-                ref={inputRef}
-                value={mensagemAtual}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                className="edit-input"
-                placeholder="Edite sua mensagem..."
-              />
-              <div className="edit-actions">
-                <button
-                  onClick={salvarEdicao}
-                  className="save-btn"
-                  title="Salvar"
-                >
-                  ✓
-                </button>
-                <button
-  onClick={(e) => cancelarEdicao(e)}
-  className="cancel-btn"
-  title="Cancelar"
->
-  ×
-</button>
+          {editandoMensagem &&
+            editandoMensagem.ID_MENSAGEM === x.ID_MENSAGEM && (
+              <div className="edit-inline">
+                <input
+                  type="text"
+                  ref={inputRef}
+                  value={mensagemAtual}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  className="edit-input"
+                  placeholder="Edite sua mensagem..."
+                />
+                <div className="edit-actions">
+                  <button
+                    onClick={salvarEdicao}
+                    className="save-btn"
+                    title="Salvar"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    onClick={(e) => cancelarEdicao(e)}
+                    className="cancel-btn"
+                    title="Cancelar"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       );
     }
   };
 
   // Adicione este useEffect no componente
-useEffect(() => {
-  if (!editandoMensagem) return;
-  
-  const handleClickOutside = (e) => {
-    // Verifica se o clique foi fora da área de edição
-    if (
-      inputRef.current && 
-      !inputRef.current.contains(e.target) && 
-      !e.target.closest('.edit-actions')
-    ) {
-      cancelarEdicao();
-    }
-  };
-  
-  // Adiciona o evento ao documento
-  document.addEventListener('mousedown', handleClickOutside);
-  
-  // Limpa o evento quando o componente desmontar
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, [editandoMensagem]);
+  useEffect(() => {
+    if (!editandoMensagem) return;
+
+    const handleClickOutside = (e) => {
+      // Verifica se o clique foi fora da área de edição
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(e.target) &&
+        !e.target.closest(".edit-actions")
+      ) {
+        cancelarEdicao();
+      }
+    };
+
+    // Adiciona o evento ao documento
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Limpa o evento quando o componente desmontar
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editandoMensagem]);
 
   return (
     <div className="container-conteudo">
