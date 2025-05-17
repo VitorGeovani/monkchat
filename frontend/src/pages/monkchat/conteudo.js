@@ -244,7 +244,13 @@ const salvarEdicao = async () => {
 };
 
 // função para cancelar a edição de uma mensagem
-const cancelarEdicao = () => {
+const cancelarEdicao = (e) => {
+  // Impedir propagação do evento para evitar conflitos
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
   setEditandoMensagem(null);
   setMensagemAtual("");
 };
@@ -528,12 +534,12 @@ const cancelarEdicao = () => {
                   ✓
                 </button>
                 <button
-                  onClick={cancelarEdicao}
-                  className="cancel-btn"
-                  title="Cancelar"
-                >
-                  ×
-                </button>
+  onClick={(e) => cancelarEdicao(e)}
+  className="cancel-btn"
+  title="Cancelar"
+>
+  ×
+</button>
               </div>
             </div>
           )}
@@ -541,6 +547,30 @@ const cancelarEdicao = () => {
       );
     }
   };
+
+  // Adicione este useEffect no componente
+useEffect(() => {
+  if (!editandoMensagem) return;
+  
+  const handleClickOutside = (e) => {
+    // Verifica se o clique foi fora da área de edição
+    if (
+      inputRef.current && 
+      !inputRef.current.contains(e.target) && 
+      !e.target.closest('.edit-actions')
+    ) {
+      cancelarEdicao();
+    }
+  };
+  
+  // Adiciona o evento ao documento
+  document.addEventListener('mousedown', handleClickOutside);
+  
+  // Limpa o evento quando o componente desmontar
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [editandoMensagem]);
 
   return (
     <div className="container-conteudo">
