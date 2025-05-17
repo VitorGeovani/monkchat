@@ -6,10 +6,52 @@ const api = axios.create({
 });
 
 export default class Api {
+  // Método para buscar sala pelo nome e obter seu ID
+  async obterIdSala(nomeSala) {
+    try {
+      // Primeiro listar todas as salas
+      const salas = await this.listarSalas();
+
+      // Verificar se há erro na resposta
+      if (salas.erro) {
+        return { erro: salas.erro };
+      }
+
+      // Buscar a sala pelo nome
+      const sala = salas.find((s) => s.NM_SALA === nomeSala);
+
+      if (sala) {
+        return sala.ID_SALA;
+      } else {
+        // Se a sala não existe, tentamos criá-la
+        const novaSala = await this.inserirSala(nomeSala);
+        if (novaSala.erro) {
+          return { erro: novaSala.erro };
+        }
+        return novaSala.id;
+      }
+    } catch (err) {
+      console.error("Erro ao obter ID da sala:", err);
+      return { erro: "Erro ao obter ID da sala" };
+    }
+  }
+
   // Método para listar mensagens
   async listarMensagens(idSala) {
-    let r = await api.get(`/chat/${idSala}`);
-    return r.data;
+    try {
+      // Se idSala é uma string (nome da sala), buscar o ID numérico
+      if (typeof idSala === "string" && isNaN(parseInt(idSala))) {
+        const salaId = await this.obterIdSala(idSala);
+        if (salaId.erro) return { erro: salaId.erro };
+        idSala = salaId;
+      }
+
+      let r = await api.get(`/messages/room/${idSala}`);
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao listar mensagens:", err);
+      return { erro: "Erro ao carregar mensagens" };
+    }
   }
 
   // Método para inserir mensagens
@@ -20,64 +62,130 @@ export default class Api {
     receiverId = null,
     receiverName = null
   ) {
-    let resp = await api.post(`/chat`, {
-      sala: nomeSala,
-      usuario: nomeUsuario,
-      mensagem: mensagem,
-      para: receiverId,
-      para_nome: receiverName,
-    });
-    return resp.data;
+    try {
+      // Converter nome da sala para ID
+      const salaId = await this.obterIdSala(nomeSala);
+      if (salaId.erro) return { erro: salaId.erro };
+
+      let resp = await api.post(`/messages`, {
+        roomId: salaId,
+        senderId: this.getUserId(),
+        content: mensagem,
+        receiverId: receiverId,
+        receiverName: receiverName,
+      });
+      return resp.data;
+    } catch (err) {
+      console.error("Erro ao inserir mensagem:", err);
+      return { erro: "Erro ao enviar mensagem" };
+    }
   }
 
   // Método para registrar entrada na sala
   async registrarEntradaSala(nomeSala, nomeUsuario) {
-    let resp = await api.post(`/chat/entrada`, {
-      sala: nomeSala,
-      usuario: nomeUsuario,
-    });
-    return resp.data;
+    try {
+      // Converter nome da sala para ID
+      const salaId = await this.obterIdSala(nomeSala);
+      if (salaId.erro) return { erro: salaId.erro };
+
+      // Registrar entrada é similar a enviar uma mensagem com tipo "entrada"
+      let resp = await api.post(`/messages`, {
+        roomId: salaId,
+        senderId: this.getUserId(),
+        content: `${nomeUsuario} entrou na sala`,
+        messageType: "entrada",
+      });
+      return resp.data;
+    } catch (err) {
+      console.error("Erro ao registrar entrada:", err);
+      return { erro: "Erro ao registrar entrada na sala" };
+    }
   }
 
   // Método para criar salas
   async inserirSala(sala) {
-    let r = await api.post(`/sala`, {
-      nome: sala,
-    });
-    return r.data;
+    try {
+      let r = await api.post(`/rooms`, {
+        name: sala,
+        userId: this.getUserId(),
+      });
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao inserir sala:", err);
+      return { erro: "Erro ao criar sala" };
+    }
   }
 
   // Método para adicionar participante na sala
-  async adicionarParticipante(sala, idUsuario) {
-    let r = await api.post(`/sala/participante`, {
-      sala: sala,
-      idUsuario: idUsuario,
-    });
-    return r.data;
+  async adicionarParticipante(nomeSala, idUsuario) {
+    try {
+      // Converter nome da sala para ID
+      const salaId = await this.obterIdSala(nomeSala);
+      if (salaId.erro) return { erro: salaId.erro };
+
+      let r = await api.post(`/rooms/participants`, {
+        roomId: salaId,
+        userId: idUsuario,
+      });
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao adicionar participante:", err);
+      return { erro: "Erro ao adicionar participante à sala" };
+    }
   }
 
   // Método para listar usuários na sala
   async listarUsuariosSala(nomeSala) {
-    let r = await api.get(`/sala/participantes/${nomeSala}`);
-    return r.data;
+    try {
+      // Converter nome da sala para ID
+      const salaId = await this.obterIdSala(nomeSala);
+      if (salaId.erro) return { erro: salaId.erro };
+
+      let r = await api.get(`/rooms/${salaId}/participants`);
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao listar usuários da sala:", err);
+      return { erro: "Erro ao carregar usuários da sala" };
+    }
+  }
+
+  // Método auxiliar para obter ID do usuário logado
+  getUserId() {
+    const usuarioLogado = JSON.parse(
+      localStorage.getItem("usuario-logado") || "{}"
+    );
+    return usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
   }
 
   // Método para criar usuários
   async inserirUsuario(usuario) {
-    let r = await api.post(`/users/register`, {
-      name: usuario.nome,
-      email: usuario.login,
-      password: usuario.senha,
-    });
-    return r.data;
+    try {
+      let r = await api.post(`/users/register`, {
+        name: usuario.nome,
+        email: usuario.login,
+        password: usuario.senha,
+      });
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao inserir usuário:", err);
+      if (err.response && err.response.data) {
+        return err.response.data;
+      }
+      return { erro: "Erro ao cadastrar usuário" };
+    }
   }
 
   // Método para atualizar usuário
   async atualizarUsuario(usuario) {
-    let r = await api.put(`/users/${usuario.id}`, {
-      name: usuario.nome,
-    });
-    return r.data;
+    try {
+      let r = await api.put(`/users/${usuario.id}`, {
+        name: usuario.nome,
+      });
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao atualizar usuário:", err);
+      return { erro: "Erro ao atualizar usuário" };
+    }
   }
 
   // Método para login
@@ -99,16 +207,26 @@ export default class Api {
 
   // Método para remover mensagens
   async removerMensagem(id) {
-    let r = await api.delete(`/chat/${id}`);
-    return r.data;
+    try {
+      let r = await api.delete(`/messages/${id}`);
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao remover mensagem:", err);
+      return { erro: "Erro ao remover mensagem" };
+    }
   }
 
   // Método para atualizar uma mensagem
   async atualizarMensagem(id, novaMensagem) {
-    let r = await api.put(`/chat/${id}`, {
-      mensagem: novaMensagem,
-    });
-    return r.data;
+    try {
+      let r = await api.put(`/messages/${id}`, {
+        content: novaMensagem,
+      });
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao atualizar mensagem:", err);
+      return { erro: "Erro ao atualizar mensagem" };
+    }
   }
 
   // Método para redefinir senha
@@ -126,6 +244,17 @@ export default class Api {
         return err.response.data;
       }
       return { erro: "Ocorreu um erro na API" };
+    }
+  }
+
+  // Método para listar salas
+  async listarSalas() {
+    try {
+      let r = await api.get(`/rooms`);
+      return r.data;
+    } catch (err) {
+      console.error("Erro ao listar salas:", err);
+      return { erro: "Erro ao carregar lista de salas" };
     }
   }
 }

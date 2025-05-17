@@ -1,4 +1,4 @@
-import "./monkchat.css"; // Importando o novo arquivo CSS
+import "./monkchat.css";
 import Cabecalho from "../../components/cabecalho";
 import Conteudo from "./conteudo";
 

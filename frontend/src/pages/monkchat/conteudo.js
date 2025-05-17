@@ -163,91 +163,91 @@ export default function Conteudo() {
   };
 
   // Função para determinar se a mensagem deve ser exibida
-  const mensagemVisivel = (mensagem) => {
-    if (!mensagem) return false;
+const mensagemVisivel = (mensagem) => {
+  if (!mensagem) return false;
 
-    const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
+  const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
 
-    // Se é mensagem de entrada na sala, sempre mostrar
-    if (mensagem.tp_mensagem === "entrada") return true;
+  // Se é mensagem de entrada na sala, sempre mostrar
+  if (mensagem.TP_MENSAGEM === "entrada") return true;
 
-    // Se é para todos, mostrar
-    if (!mensagem.id_usuario_para) return true;
+  // Se é para todos, mostrar
+  if (!mensagem.ID_USUARIO_PARA) return true;
 
-    // Se é para o usuário logado, mostrar
-    if (String(mensagem.id_usuario_para) === String(userId)) return true;
+  // Se é para o usuário logado, mostrar
+  if (String(mensagem.ID_USUARIO_PARA) === String(userId)) return true;
 
-    // Se foi enviada pelo usuário logado, mostrar
-    if (String(mensagem.id_usuario_envio) === String(userId)) return true;
+  // Se foi enviada pelo usuário logado, mostrar
+  if (String(mensagem.ID_USUARIO_ENVIO) === String(userId)) return true;
 
-    // Nos outros casos, não mostrar
-    return false;
-  };
+  // Nos outros casos, não mostrar
+  return false;
+};
 
-  // função para iniciar a edição de uma mensagem
-  const iniciarEdicao = (mensagem) => {
-    // Verifica se o usuário pode editar esta mensagem (apenas mensagens enviadas pelo próprio usuário)
-    const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
-    if (mensagem.id_usuario_envio !== userId) {
-      toast.warning("Você só pode editar suas próprias mensagens");
-      return;
+// função para iniciar a edição de uma mensagem
+const iniciarEdicao = (mensagem) => {
+  // Verifica se o usuário pode editar esta mensagem
+  const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
+  if (String(mensagem.ID_USUARIO_ENVIO) !== String(userId)) {
+    toast.warning("Você só pode editar suas próprias mensagens");
+    return;
+  }
+
+  // Verificar se não é mensagem de entrada
+  if (mensagem.TP_MENSAGEM === "entrada") {
+    toast.warning("Não é possível editar mensagens de entrada");
+    return;
+  }
+
+  // Configurar estados para edição
+  setEditandoMensagem(mensagem);
+  setMensagemAtual(mensagem.DS_MENSAGEM);
+
+  // Rolar para o final da tela para mostrar o input de edição
+  setTimeout(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
+  }, 100);
+};
 
-    // Verificar se não é mensagem de entrada
-    if (mensagem.tp_mensagem === "entrada") {
-      toast.warning("Não é possível editar mensagens de entrada");
-      return;
-    }
+// função para salvar a mensagem editada
+const salvarEdicao = async () => {
+  if (!mensagemAtual.trim()) {
+    toast.error("A mensagem não pode ser vazia");
+    return;
+  }
 
-    // Configurar estados para edição
-    setEditandoMensagem(mensagem);
-    setMensagemAtual(mensagem.ds_mensagem);
+  try {
+    // Chamar API para atualizar a mensagem
+    const resp = await api.atualizarMensagem(
+      editandoMensagem.ID_MENSAGEM,
+      mensagemAtual
+    );
 
-    // Rolar para o final da tela para mostrar o input de edição
-    setTimeout(() => {
-      if (chatRef.current) {
-        chatRef.current.scrollTop = chatRef.current.scrollHeight;
-      }
-    }, 100);
-  };
+    if (!validarResposta(resp)) return;
 
-  // função para cancelar a edição
-  const cancelarEdicao = () => {
-    setEditandoMensagem(null);
-    setMensagemAtual("");
-  };
+    // Atualizar o chat localmente para refletir a alteração
+    const novoChat = chat.map((msg) =>
+      msg.ID_MENSAGEM === editandoMensagem.ID_MENSAGEM
+        ? { ...msg, DS_MENSAGEM: mensagemAtual }
+        : msg
+    );
 
-  // função para salvar a mensagem editada
-  const salvarEdicao = async () => {
-    if (!mensagemAtual.trim()) {
-      toast.error("A mensagem não pode ser vazia");
-      return;
-    }
+    setChat(novoChat);
+    toast.success("Mensagem atualizada com sucesso!");
+    cancelarEdicao();
+  } catch (error) {
+    console.error("Erro ao atualizar mensagem:", error);
+    toast.error("Erro ao atualizar mensagem");
+  }
+};
 
-    try {
-      // Chamar API para atualizar a mensagem
-      const resp = await api.atualizarMensagem(
-        editandoMensagem.id_chat,
-        mensagemAtual
-      );
-
-      if (!validarResposta(resp)) return;
-
-      // Atualizar o chat localmente para refletir a alteração
-      const novoChat = chat.map((msg) =>
-        msg.id_chat === editandoMensagem.id_chat
-          ? { ...msg, ds_mensagem: mensagemAtual }
-          : msg
-      );
-
-      setChat(novoChat);
-      toast.success("Mensagem atualizada com sucesso!");
-      cancelarEdicao();
-    } catch (error) {
-      console.error("Erro ao atualizar mensagem:", error);
-      toast.error("Erro ao atualizar mensagem");
-    }
-  };
+// função para cancelar a edição de uma mensagem
+const cancelarEdicao = () => {
+  setEditandoMensagem(null);
+  setMensagemAtual("");
+};
 
   const enviarMensagem = async () => {
     if (!salaAtiva) {
@@ -445,22 +445,23 @@ export default function Conteudo() {
 
   const renderizarMensagem = (x) => {
     if (!x) return null;
-
+  
     const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
-    const isUsuarioAtual = x.id_usuario_envio === userId;
-
-    if (x.tp_mensagem === "entrada") {
+    // Convertendo para consistência na comparação
+    const isUsuarioAtual = String(x.ID_USUARIO_ENVIO) === String(userId);
+  
+    if (x.TP_MENSAGEM === "entrada") {
       return (
-        <div className="chat-message" key={x.id_chat}>
+        <div className="chat-message" key={x.ID_MENSAGEM}>
           <div
             className="message-header"
             style={{ display: "flex", justifyContent: "start" }}
           >
-            <span>{formatarDataHora(x.dt_mensagem)} </span>
+            <span>{formatarDataHora(x.DT_MENSAGEM)} </span>
             <span style={{ marginLeft: "0.5em" }}>
               <strong style={{ color: "#fff" }}>
                 {" "}
-                {x.tb_usuario?.nm_usuario || "Usuário"}
+                {x.sender_name || "Usuário"}
               </strong>
               <span style={{ color: "#999" }}> entrou na sala...</span>
             </span>
@@ -469,45 +470,45 @@ export default function Conteudo() {
       );
     } else {
       let destinatario;
-
-      if (!x.id_usuario_para) {
+  
+      if (!x.ID_USUARIO_PARA) {
         destinatario = "Todos";
-      } else if (x.nm_usuario_para === "Somente eu") {
+      } else if (x.NM_USUARIO_PARA === "Somente eu") {
         destinatario = "Somente eu";
       } else {
-        destinatario = x.nm_usuario_para || "Usuário";
+        destinatario = x.NM_USUARIO_PARA || "Usuário";
       }
-
+  
       return (
         <div
           className={`chat-message ${isUsuarioAtual ? "minha-mensagem" : ""} ${
-            editandoMensagem && editandoMensagem.id_chat === x.id_chat
+            editandoMensagem && editandoMensagem.ID_MENSAGEM === x.ID_MENSAGEM
               ? "editando"
               : ""
           }`}
-          key={x.id_chat}
+          key={x.ID_MENSAGEM}
           onClick={() => isUsuarioAtual && iniciarEdicao(x)}
         >
           <div className="message-header">
             <span>
-              {formatarDataHora(x.dt_mensagem)}{" "}
+              {formatarDataHora(x.DT_MENSAGEM)}{" "}
               <strong style={{ color: "#fff" }}>
-                {x.tb_usuario?.nm_usuario || "Usuário"}
+                {x.sender_name || "Usuário"}
               </strong>{" "}
               fala para{" "}
               <strong style={{ color: "#fff" }}>{destinatario}</strong>:
             </span>
-
+  
             {isUsuarioAtual && (
               <span className="message-actions">
                 <i className="edit-icon">✏️</i>
               </span>
             )}
           </div>
-          <div className="message-content">{x.ds_mensagem}</div>
-
+          <div className="message-content">{x.DS_MENSAGEM}</div>
+  
           {/* Input de edição inline */}
-          {editandoMensagem && editandoMensagem.id_chat === x.id_chat && (
+          {editandoMensagem && editandoMensagem.ID_MENSAGEM === x.ID_MENSAGEM && (
             <div className="edit-inline">
               <input
                 type="text"
