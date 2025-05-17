@@ -1,0 +1,163 @@
+.container-alterar {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    font-family: Montserrat;
+}
+
+.container-alterar .box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 60vw;
+    padding: 2em 5em 6em 5em;
+    background-color: #583BBF;
+    color: #fff;
+}
+
+.container-alterar .titulo {
+    font: 700 2.2em Montserrat;
+}
+
+.container-alterar .alterar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.container-alterar .container-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1em;
+    padding-bottom: 5em;
+}
+
+.container-alterar .form-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-alterar .title {
+    font-size: 3.5em;
+    font-weight: bold;
+    margin-bottom: .5em !important;
+}
+
+.container-alterar .form-row > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin: .2em;
+}
+
+.container-alterar .label {
+    font-weight: 700;
+    font-size: 1.2em;
+    width: 6em;
+}
+
+.container-alterar .value {
+    min-width: 150px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.container-alterar .alterar-button {
+    margin-top: 1em;
+    background-color: #50B4BF;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.container-alterar .alterar-button:hover {
+    background-color: #3d9aa5;
+}
+
+/* Adicionar ao final do arquivo */
+
+.container-alterar .reset-password {
+    text-decoration: underline;
+    color: #2196F3;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.container-alterar .reset-password:hover {
+    color: #0D47A1;
+}
+
+/* Estilo para o modal de redefinição de senha */
+.reset-password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.reset-password-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.reset-password-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.reset-password-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.reset-password-close {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #777;
+}
+
+.reset-password-body {
+    margin-bottom: 20px;
+}
+
+.reset-password-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.password-input-group {
+    margin-bottom: 15px;
+}
+
+.password-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}

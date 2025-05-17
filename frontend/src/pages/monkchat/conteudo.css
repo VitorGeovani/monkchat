@@ -1,0 +1,316 @@
+.container-conteudo {
+    font-family: Montserrat, sans-serif;
+    display: flex;
+    flex-direction: row;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    height: 70vh;
+}
+
+.container-conteudo .container-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #E9A227;
+    color: white;
+    padding: 1.5em;
+    width: 18em;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.container-conteudo .box-sala {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-conteudo .box-sala > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0.6em 0;
+}
+
+.container-conteudo .label {
+    font-weight: 700;
+    font-size: 1.1em;
+    width: 4em;
+}
+
+.container-conteudo .buttons-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.5em;
+}
+
+.container-conteudo .buttons-area button {
+    width: 48%;
+}
+
+.container-conteudo .box-mensagem {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5em;
+}
+
+.container-conteudo .box-mensagem textarea {
+    height: 15em;
+    margin: 0.5em 0 1em 0;
+}
+
+.container-conteudo .btn-enviar {
+    align-self: center;
+    width: 100%;
+}
+
+.container-conteudo .container-chat {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: #343434;
+    position: relative;
+    height: 100%;
+}
+
+.container-conteudo .chat-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5em;
+}
+
+.container-conteudo .chat-atualizar {
+    width: 1.2em;
+    cursor: pointer;
+    margin: 0.5em;
+    transition: transform 0.5s;
+}
+
+.container-conteudo .chat-atualizar:hover {
+    transform: rotate(360deg);
+}
+
+.container-conteudo .chat {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    flex-grow: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 20px;
+    position: relative;
+    height: 0;
+}
+
+.container-conteudo .chat::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container-conteudo .chat::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 4px;
+}
+
+.container-conteudo .chat::-webkit-scrollbar-track {
+    background-color: #444;
+    border-radius: 4px;
+}
+
+/* Estilos para mensagens e edição */
+.container-conteudo .chat-message {
+    margin-bottom: 1em;
+    color: white;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: default;
+    padding: 6px;
+}
+
+.container-conteudo .chat-message.minha-mensagem {
+    cursor: pointer;
+}
+
+.container-conteudo .chat-message.minha-mensagem:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.container-conteudo .chat-message .message-header {
+    font-size: 0.8em;
+    color: #999;
+    margin-bottom: 0.2em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.container-conteudo .message-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.container-conteudo .chat-message.minha-mensagem:hover .message-actions {
+    opacity: 1;
+}
+
+.container-conteudo .edit-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 0.9em;
+}
+
+.container-conteudo .message-content {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.8em;
+    border-radius: 4px;
+}
+
+.container-conteudo .input-chat {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    background-color: #444;
+    padding: 0.7em;
+    align-items: center;
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.container-conteudo .input-chat input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5em 1em;
+    background-color: #555;
+    color: white;
+    font-size: 0.95em;
+}
+
+.container-conteudo .input-chat button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 8px;
+    padding: 0 5px;
+}
+
+.container-conteudo .editing-actions {
+    display: flex;
+    align-items: center;
+}
+
+.container-conteudo .save-btn {
+    color: #4caf50;
+    margin-right: 5px;
+}
+
+.container-conteudo .cancel-btn {
+    color: #f44336;
+}
+
+.container-conteudo .editing-indicator {
+    font-size: 0.8em;
+    color: #ffab40;
+    margin-right: 10px;
+    background-color: rgba(255, 171, 64, 0.1);
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Adicionar estas regras ao final do arquivo CSS existente */
+
+/* Estilização para edição inline de mensagens */
+.container-conteudo .edit-inline {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(70, 70, 70, 0.7);
+    border-radius: 4px;
+    padding: 6px;
+    animation: fadeIn 0.3s;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .container-conteudo .edit-input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    background-color: #555;
+    color: white;
+    font-size: 0.95em;
+  }
+  
+  .container-conteudo .edit-actions {
+    display: flex;
+    margin-left: 8px;
+  }
+  
+  .container-conteudo .edit-actions button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 0 5px;
+    margin: 0 2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .container-conteudo .save-btn {
+    background-color: rgba(76, 175, 80, 0.3) !important;
+  }
+  
+  .container-conteudo .save-btn:hover {
+    background-color: rgba(76, 175, 80, 0.6) !important;
+  }
+  
+  .container-conteudo .cancel-btn {
+    background-color: rgba(244, 67, 54, 0.3) !important;
+  }
+  
+  .container-conteudo .cancel-btn:hover {
+    background-color: rgba(244, 67, 54, 0.6) !important;
+  }
+  
+  .container-conteudo .chat-message.editando {
+    background-color: rgba(233, 162, 39, 0.1);
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(233, 162, 39, 0.3);
+  }
+  
+  /* Remover a barra de input fixa na parte inferior */
+  .container-conteudo .input-chat {
+    display: none;
+  }
+
+@media (max-width: 768px) {
+    .container-conteudo {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .container-conteudo .container-form {
+        width: 100%;
+        padding: 1em;
+        height: auto;
+    }
+    
+    .container-conteudo .container-chat {
+        height: 400px;
+    }
+}

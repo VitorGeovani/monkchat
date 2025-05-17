@@ -1,0 +1,60 @@
+.barra {
+    background: linear-gradient(180deg, #BA9D4C -10.17%, #F3D991 115.25%);
+    width: 4px;
+    height: 3em;
+    margin: 0em 1em;
+    border-radius: 1em;
+}
+
+.container-cabecalho {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3em;
+    width: 100%;
+}
+
+.container-cabecalho .logo-area {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.container-cabecalho .titulo {
+    font: 700 2.2em Montserrat;
+}
+
+.container-cabecalho .menu-area {
+    display: flex;
+    flex-direction: row;
+}
+
+.container-cabecalho .menu-item {
+    margin-left: 2em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.container-cabecalho .menu-item:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 400px) {
+    .barra {
+        display: none;
+    }
+
+    .container-cabecalho {
+        flex-direction: column;
+    }
+    
+    .container-cabecalho .menu-area {
+        margin-top: 1em;
+    }
+    
+    .container-cabecalho .menu-item {
+        margin: 0 1em;
+    }
+}

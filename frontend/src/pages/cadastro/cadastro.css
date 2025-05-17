@@ -1,0 +1,99 @@
+.container-cadastro {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    font-family: Montserrat;
+}
+
+.container-cadastro .box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 60vw;
+    padding: 2em 5em 6em 5em;
+    background-color: #583BBF;
+    color: #fff;
+}
+
+.container-cadastro .titulo {
+    font: 700 2.2em Montserrat;
+}
+
+.container-cadastro .cadastro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.container-cadastro .container-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1em;
+    padding-bottom: 5em;
+}
+
+.container-cadastro .form-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-cadastro .title {
+    font-size: 3.5em;
+    font-weight: bold;
+    margin-bottom: .5em !important;
+}
+
+.container-cadastro .form-row > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin: .2em;
+}
+
+.container-cadastro .label {
+    font-weight: 700;
+    font-size: 1.2em;
+    width: 6em;
+}
+
+.container-cadastro .login-link {
+    margin-top: 2em;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.container-cadastro .login-link a {
+    color: #583BBF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container-cadastro .login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Adicionando ao final do arquivo */
+
+.container-cadastro .login-link {
+    margin-top: 2em;
+    text-align: center;
+    font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.container-cadastro .login-link a {
+    color: #583BBF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container-cadastro .login-link a:hover {
+    text-decoration: underline;
+}
