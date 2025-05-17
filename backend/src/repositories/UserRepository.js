@@ -57,12 +57,12 @@ class UserRepository {
     try {
       console.log("Atualizando senha para usuário ID:", id);
       console.log("Nova senha:", password);
-      
+
       const [result] = await db.query(
         "UPDATE TB_USUARIO SET DS_SENHA = ? WHERE ID_USUARIO = ?",
         [password, id]
       );
-      
+
       console.log("Resultado da atualização:", result);
       return result.affectedRows > 0;
     } catch (error) {

@@ -26,7 +26,7 @@
     flex-direction: column;
 }
 
-.container-conteudo .box-sala > div {
+.container-conteudo .box-sala>div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -221,8 +221,6 @@
     border-radius: 10px;
 }
 
-/* Adicionar estas regras ao final do arquivo CSS existente */
-
 /* Estilização para edição inline de mensagens */
 .container-conteudo .edit-inline {
     margin-top: 6px;
@@ -232,14 +230,21 @@
     border-radius: 4px;
     padding: 6px;
     animation: fadeIn 0.3s;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .container-conteudo .edit-input {
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container-conteudo .edit-input {
     flex-grow: 1;
     border: none;
     border-radius: 4px;
@@ -247,14 +252,14 @@
     background-color: #555;
     color: white;
     font-size: 0.95em;
-  }
-  
-  .container-conteudo .edit-actions {
+}
+
+.container-conteudo .edit-actions {
     display: flex;
     margin-left: 8px;
-  }
-  
-  .container-conteudo .edit-actions button {
+}
+
+.container-conteudo .edit-actions button {
     background-color: transparent;
     border: none;
     color: white;
@@ -269,47 +274,46 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-  }
-  
-  .container-conteudo .save-btn {
+}
+
+.container-conteudo .save-btn {
     background-color: rgba(76, 175, 80, 0.3) !important;
-  }
-  
-  .container-conteudo .save-btn:hover {
+}
+
+.container-conteudo .save-btn:hover {
     background-color: rgba(76, 175, 80, 0.6) !important;
-  }
-  
-  .container-conteudo .cancel-btn {
+}
+
+.container-conteudo .cancel-btn {
     background-color: rgba(244, 67, 54, 0.3) !important;
-  }
-  
-  .container-conteudo .cancel-btn:hover {
+}
+
+.container-conteudo .cancel-btn:hover {
     background-color: rgba(244, 67, 54, 0.6) !important;
-  }
-  
-  .container-conteudo .chat-message.editando {
+}
+
+.container-conteudo .chat-message.editando {
     background-color: rgba(233, 162, 39, 0.1);
     border-radius: 4px;
     box-shadow: 0 0 0 1px rgba(233, 162, 39, 0.3);
-  }
-  
-  /* Remover a barra de input fixa na parte inferior */
-  .container-conteudo .input-chat {
+}
+
+.container-conteudo .input-chat {
     display: none;
-  }
+}
 
 @media (max-width: 768px) {
     .container-conteudo {
         flex-direction: column;
         height: auto;
     }
-    
+
     .container-conteudo .container-form {
         width: 100%;
         padding: 1em;
         height: auto;
     }
-    
+
     .container-conteudo .container-chat {
         height: 400px;
     }

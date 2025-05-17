@@ -47,7 +47,7 @@
     margin-bottom: .5em !important;
 }
 
-.container-alterar .form-row > div {
+.container-alterar .form-row>div {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -82,8 +82,6 @@
 .container-alterar .alterar-button:hover {
     background-color: #3d9aa5;
 }
-
-/* Adicionar ao final do arquivo */
 
 .container-alterar .reset-password {
     text-decoration: underline;

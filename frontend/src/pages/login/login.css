@@ -47,7 +47,7 @@
     margin-bottom: .5em !important;
 }
 
-.container-login .form-row > div {
+.container-login .form-row>div {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -76,8 +76,6 @@
 .container-login .registro-link a:hover {
     text-decoration: underline;
 }
-
-/* Adicionando ao final do arquivo */
 
 .container-login .registro-link {
     margin-top: 2em;

@@ -1,21 +1,23 @@
-import db from '../db.js';
+import db from "../db.js";
 
 class RoomRepository {
   async create(room) {
     const [result] = await db.query(
-      'INSERT INTO TB_SALA (ID_USUARIO, NM_SALA) VALUES (?, ?)',
+      "INSERT INTO TB_SALA (ID_USUARIO, NM_SALA) VALUES (?, ?)",
       [room.userId, room.name]
     );
     return { id: result.insertId, ...room };
   }
 
   async findById(id) {
-    const [rows] = await db.query('SELECT * FROM TB_SALA WHERE ID_SALA = ?', [id]);
+    const [rows] = await db.query("SELECT * FROM TB_SALA WHERE ID_SALA = ?", [
+      id,
+    ]);
     return rows[0];
   }
 
   async findAll() {
-    const [rows] = await db.query('SELECT * FROM TB_SALA');
+    const [rows] = await db.query("SELECT * FROM TB_SALA");
     return rows;
   }
 
@@ -30,7 +32,9 @@ class RoomRepository {
   }
 
   async findByName(name) {
-    const [rows] = await db.query('SELECT * FROM TB_SALA WHERE NM_SALA = ?', [name]);
+    const [rows] = await db.query("SELECT * FROM TB_SALA WHERE NM_SALA = ?", [
+      name,
+    ]);
     return rows[0];
   }
 }

@@ -46,27 +46,32 @@ class UserController {
       }
 
       const user = await UserRepository.findByEmail(email);
-      
+
       if (!user) {
         return res.status(401).json({ error: "Usuário não encontrado" });
       }
 
       // Verifica se a senha está correta
       if (user.DS_SENHA !== password) {
-        console.log("Senha incorreta. Fornecida:", password, "Esperada:", user.DS_SENHA);
+        console.log(
+          "Senha incorreta. Fornecida:",
+          password,
+          "Esperada:",
+          user.DS_SENHA
+        );
         return res.status(401).json({ error: "Credenciais inválidas" });
       }
 
-      // Retorna os dados do usuário (em aplicações reais, normalmente retornaria um token JWT)
+      // Retorna os dados do usuário
       return res.status(200).json({
         user: {
           ID_USUARIO: user.ID_USUARIO,
           NM_USUARIO: user.NM_USUARIO,
           DS_EMAIL: user.DS_EMAIL,
-          id_usuario: user.ID_USUARIO, // Adicionando para compatibilidade
-          nm_usuario: user.NM_USUARIO, // Adicionando para compatibilidade
-          ds_email: user.DS_EMAIL // Adicionando para compatibilidade
-        }
+          id_usuario: user.ID_USUARIO,
+          nm_usuario: user.NM_USUARIO,
+          ds_email: user.DS_EMAIL,
+        },
       });
     } catch (error) {
       console.error("Erro ao fazer login:", error);
@@ -103,19 +108,25 @@ class UserController {
         return res.status(500).json({ erro: "Erro ao atualizar usuário" });
       }
 
-      return res.status(200).json({ message: "Usuário atualizado com sucesso" });
+      return res
+        .status(200)
+        .json({ message: "Usuário atualizado com sucesso" });
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
       return res.status(500).json({ erro: "Erro interno do servidor" });
     }
   }
 
-  // Método de redefinição de senha CORRIGIDO
+  // Método de redefinição de senha
   async resetPassword(req, res) {
     try {
       const { id, currentPassword, newPassword } = req.body;
-      
-      console.log("Solicitação de redefinição de senha recebida:", { id, hasCurrentPwd: !!currentPassword, hasNewPwd: !!newPassword });
+
+      console.log("Solicitação de redefinição de senha recebida:", {
+        id,
+        hasCurrentPwd: !!currentPassword,
+        hasNewPwd: !!newPassword,
+      });
 
       // Validação básica
       if (!id || !currentPassword || !newPassword) {
@@ -149,7 +160,7 @@ class UserController {
       }
 
       console.log("Senha atualizada com sucesso para usuário ID:", id);
-      
+
       // Verificar se a senha foi realmente atualizada
       const updatedUser = await UserRepository.findById(id);
       console.log("Nova senha armazenada:", updatedUser.DS_SENHA);

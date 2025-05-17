@@ -49,11 +49,11 @@
     .container-cabecalho {
         flex-direction: column;
     }
-    
+
     .container-cabecalho .menu-area {
         margin-top: 1em;
     }
-    
+
     .container-cabecalho .menu-item {
         margin: 0 1em;
     }

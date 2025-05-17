@@ -1,8 +1,12 @@
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingBar from "react-top-loading-bar";
-import './conteudo.css';
-import { ChatButton, ChatInput, ChatTextArea } from "../../components/outros/inputs";
+import "./conteudo.css";
+import {
+  ChatButton,
+  ChatInput,
+  ChatTextArea,
+} from "../../components/outros/inputs";
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -33,8 +37,8 @@ export default function Conteudo() {
   const [para, setPara] = useState("Todos");
   const [mensagemAtual, setMensagemAtual] = useState("");
   const [usuariosSala, setUsuariosSala] = useState([]);
-  
-  // Novos estados para edição de mensagens
+
+  // estados para edição de mensagens
   const [editandoMensagem, setEditandoMensagem] = useState(null);
 
   const loading = useRef(null);
@@ -43,68 +47,74 @@ export default function Conteudo() {
   const inputRef = useRef(null);
 
   // Funções para carregar mensagens e usuários
-  const carregarMensagens = useCallback(async (mostrarErro = false) => {
-    if (!salaAtiva) return;
+  const carregarMensagens = useCallback(
+    async (mostrarErro = false) => {
+      if (!salaAtiva) return;
 
-    if (loading.current) {
-      loading.current.continuousStart();
-    }
-
-    try {
-      const mensagens = await api.listarMensagens(salaAtiva);
-      if (!mensagens.erro) {
-        setChat(mensagens);
-      } else if (mostrarErro) {
-        // Só exibe o erro se mostrarErro for true
-        toast.error(mensagens.erro);
+      if (loading.current) {
+        loading.current.continuousStart();
       }
-    } catch (error) {
-      console.error("Erro ao carregar mensagens:", error);
-      if (mostrarErro) {
-        toast.error("Erro ao carregar mensagens");
-      }
-    }
 
-    if (loading.current) {
-      loading.current.complete();
-    }
-  }, [salaAtiva]);
-
-  const carregarUsuariosSala = useCallback(async (mostrarErro = false) => {
-    if (!salaAtiva) return;
-
-    try {
-      const usuarios = await api.listarUsuariosSala(salaAtiva);
-      if (usuarios && !usuarios.erro) {
-        setUsuariosSala(usuarios);
-      } else if (mostrarErro) {
-        toast.error(usuarios.erro);
+      try {
+        const mensagens = await api.listarMensagens(salaAtiva);
+        if (!mensagens.erro) {
+          setChat(mensagens);
+        } else if (mostrarErro) {
+          // Só exibe o erro se mostrarErro for true
+          toast.error(mensagens.erro);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar mensagens:", error);
+        if (mostrarErro) {
+          toast.error("Erro ao carregar mensagens");
+        }
       }
-    } catch (error) {
-      console.error("Erro ao carregar usuários da sala:", error);
-      if (mostrarErro) {
-        toast.error("Erro ao carregar usuários da sala");
+
+      if (loading.current) {
+        loading.current.complete();
       }
-    }
-  }, [salaAtiva]);
+    },
+    [salaAtiva]
+  );
+
+  const carregarUsuariosSala = useCallback(
+    async (mostrarErro = false) => {
+      if (!salaAtiva) return;
+
+      try {
+        const usuarios = await api.listarUsuariosSala(salaAtiva);
+        if (usuarios && !usuarios.erro) {
+          setUsuariosSala(usuarios);
+        } else if (mostrarErro) {
+          toast.error(usuarios.erro);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar usuários da sala:", error);
+        if (mostrarErro) {
+          toast.error("Erro ao carregar usuários da sala");
+        }
+      }
+    },
+    [salaAtiva]
+  );
 
   // Carregar mensagens quando a sala ativa mudar
   useEffect(() => {
     if (salaAtiva) {
       carregarMensagens(true);
       carregarUsuariosSala(true);
-      
+
       // Configurar atualização automática
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      
+
       intervalRef.current = setInterval(() => {
         carregarMensagens(false); // Não exibe erro nas atualizações automáticas
         carregarUsuariosSala(false);
       }, 5000); // Atualizar a cada 5 segundos
     }
-    
+
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -112,13 +122,14 @@ export default function Conteudo() {
     };
   }, [salaAtiva, carregarMensagens, carregarUsuariosSala]);
 
-  // Scroll melhorado que vai para a última mensagem apenas quando não estiver no meio da conversa
+  // Scroll que vai para a última mensagem apenas quando não estiver no meio da conversa
   useEffect(() => {
     if (chatRef.current) {
       // Verifica se o usuário está próximo ao fim do scroll antes de rolar para baixo
-      const scrollPosition = chatRef.current.scrollTop + chatRef.current.clientHeight;
+      const scrollPosition =
+        chatRef.current.scrollTop + chatRef.current.clientHeight;
       const isNearBottom = scrollPosition >= chatRef.current.scrollHeight - 100;
-      
+
       if (isNearBottom) {
         chatRef.current.scrollTop = chatRef.current.scrollHeight;
       }
@@ -154,26 +165,26 @@ export default function Conteudo() {
   // Função para determinar se a mensagem deve ser exibida
   const mensagemVisivel = (mensagem) => {
     if (!mensagem) return false;
-    
+
     const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
-    
+
     // Se é mensagem de entrada na sala, sempre mostrar
-    if (mensagem.tp_mensagem === 'entrada') return true;
-    
+    if (mensagem.tp_mensagem === "entrada") return true;
+
     // Se é para todos, mostrar
     if (!mensagem.id_usuario_para) return true;
-    
+
     // Se é para o usuário logado, mostrar
     if (String(mensagem.id_usuario_para) === String(userId)) return true;
-    
+
     // Se foi enviada pelo usuário logado, mostrar
     if (String(mensagem.id_usuario_envio) === String(userId)) return true;
-    
+
     // Nos outros casos, não mostrar
     return false;
   };
 
-  // Nova função para iniciar a edição de uma mensagem
+  // função para iniciar a edição de uma mensagem
   const iniciarEdicao = (mensagem) => {
     // Verifica se o usuário pode editar esta mensagem (apenas mensagens enviadas pelo próprio usuário)
     const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
@@ -181,17 +192,17 @@ export default function Conteudo() {
       toast.warning("Você só pode editar suas próprias mensagens");
       return;
     }
-    
+
     // Verificar se não é mensagem de entrada
-    if (mensagem.tp_mensagem === 'entrada') {
+    if (mensagem.tp_mensagem === "entrada") {
       toast.warning("Não é possível editar mensagens de entrada");
       return;
     }
-    
+
     // Configurar estados para edição
     setEditandoMensagem(mensagem);
     setMensagemAtual(mensagem.ds_mensagem);
-    
+
     // Rolar para o final da tela para mostrar o input de edição
     setTimeout(() => {
       if (chatRef.current) {
@@ -200,35 +211,35 @@ export default function Conteudo() {
     }, 100);
   };
 
-  // Nova função para cancelar a edição
+  // função para cancelar a edição
   const cancelarEdicao = () => {
     setEditandoMensagem(null);
     setMensagemAtual("");
   };
 
-  // Nova função para salvar a mensagem editada
+  // função para salvar a mensagem editada
   const salvarEdicao = async () => {
     if (!mensagemAtual.trim()) {
       toast.error("A mensagem não pode ser vazia");
       return;
     }
-    
+
     try {
       // Chamar API para atualizar a mensagem
       const resp = await api.atualizarMensagem(
-        editandoMensagem.id_chat, 
+        editandoMensagem.id_chat,
         mensagemAtual
       );
-      
+
       if (!validarResposta(resp)) return;
-      
+
       // Atualizar o chat localmente para refletir a alteração
-      const novoChat = chat.map(msg => 
+      const novoChat = chat.map((msg) =>
         msg.id_chat === editandoMensagem.id_chat
           ? { ...msg, ds_mensagem: mensagemAtual }
           : msg
       );
-      
+
       setChat(novoChat);
       toast.success("Mensagem atualizada com sucesso!");
       cancelarEdicao();
@@ -265,9 +276,15 @@ export default function Conteudo() {
     }
 
     try {
-      const resp = await api.inserirMensagem(salaAtiva, usu, msg, destinatarioId, destinatarioNome);
+      const resp = await api.inserirMensagem(
+        salaAtiva,
+        usu,
+        msg,
+        destinatarioId,
+        destinatarioNome
+      );
       if (!validarResposta(resp)) return;
-      
+
       setMsg("");
       await carregarMensagens(true);
     } catch (error) {
@@ -327,14 +344,17 @@ export default function Conteudo() {
 
       // Adicionar usuário à sala e enviar mensagem de entrada
       try {
-        await api.adicionarParticipante(sala, usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO);
-        
+        await api.adicionarParticipante(
+          sala,
+          usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO
+        );
+
         // Enviar mensagem de entrada
         await api.registrarEntradaSala(sala, usu);
-        
+
         await carregarMensagens(true);
         await carregarUsuariosSala(true);
-        
+
         toast.success("Usuário entrou na sala!");
       } catch (error) {
         console.error("Erro ao entrar na sala:", error);
@@ -366,13 +386,13 @@ export default function Conteudo() {
 
       // Adicionar o novo usuário à sala e enviar mensagem de entrada
       await api.adicionarParticipante(
-        sala, 
+        sala,
         loginResp.id_usuario || loginResp.ID_USUARIO
       );
-      
+
       // Enviar mensagem de entrada
       await api.registrarEntradaSala(sala, usu);
-      
+
       await carregarMensagens(true);
       await carregarUsuariosSala(true);
 
@@ -405,7 +425,7 @@ export default function Conteudo() {
 
       // Atualizar a sala ativa quando a sala for criada com sucesso
       setSalaAtiva(sala);
-      
+
       toast.success("Sala cadastrada com sucesso!");
       await carregarMensagens(true);
       await carregarUsuariosSala(true);
@@ -425,25 +445,31 @@ export default function Conteudo() {
 
   const renderizarMensagem = (x) => {
     if (!x) return null;
-    
+
     const userId = usuarioLogado.id_usuario || usuarioLogado.ID_USUARIO;
     const isUsuarioAtual = x.id_usuario_envio === userId;
-    
-    if (x.tp_mensagem === 'entrada') {
+
+    if (x.tp_mensagem === "entrada") {
       return (
         <div className="chat-message" key={x.id_chat}>
-          <div className="message-header" style={{display: 'flex', justifyContent: 'start'}}>
+          <div
+            className="message-header"
+            style={{ display: "flex", justifyContent: "start" }}
+          >
             <span>{formatarDataHora(x.dt_mensagem)} </span>
-            <span style={{marginLeft: '0.5em'}}>
-              <strong style={{color: "#fff"}}> {x.tb_usuario?.nm_usuario || "Usuário"}</strong>
-              <span style={{color: "#999"}}> entrou na sala...</span>
+            <span style={{ marginLeft: "0.5em" }}>
+              <strong style={{ color: "#fff" }}>
+                {" "}
+                {x.tb_usuario?.nm_usuario || "Usuário"}
+              </strong>
+              <span style={{ color: "#999" }}> entrou na sala...</span>
             </span>
           </div>
         </div>
       );
     } else {
       let destinatario;
-      
+
       if (!x.id_usuario_para) {
         destinatario = "Todos";
       } else if (x.nm_usuario_para === "Somente eu") {
@@ -451,18 +477,27 @@ export default function Conteudo() {
       } else {
         destinatario = x.nm_usuario_para || "Usuário";
       }
-      
+
       return (
-        <div 
-          className={`chat-message ${isUsuarioAtual ? 'minha-mensagem' : ''} ${editandoMensagem && editandoMensagem.id_chat === x.id_chat ? 'editando' : ''}`} 
+        <div
+          className={`chat-message ${isUsuarioAtual ? "minha-mensagem" : ""} ${
+            editandoMensagem && editandoMensagem.id_chat === x.id_chat
+              ? "editando"
+              : ""
+          }`}
           key={x.id_chat}
           onClick={() => isUsuarioAtual && iniciarEdicao(x)}
         >
           <div className="message-header">
             <span>
-              {formatarDataHora(x.dt_mensagem)} <strong style={{color: "#fff"}}>{x.tb_usuario?.nm_usuario || "Usuário"}</strong> fala para <strong style={{color: "#fff"}}>{destinatario}</strong>:
+              {formatarDataHora(x.dt_mensagem)}{" "}
+              <strong style={{ color: "#fff" }}>
+                {x.tb_usuario?.nm_usuario || "Usuário"}
+              </strong>{" "}
+              fala para{" "}
+              <strong style={{ color: "#fff" }}>{destinatario}</strong>:
             </span>
-            
+
             {isUsuarioAtual && (
               <span className="message-actions">
                 <i className="edit-icon">✏️</i>
@@ -470,7 +505,7 @@ export default function Conteudo() {
             )}
           </div>
           <div className="message-content">{x.ds_mensagem}</div>
-          
+
           {/* Input de edição inline */}
           {editandoMensagem && editandoMensagem.id_chat === x.id_chat && (
             <div className="edit-inline">
@@ -484,8 +519,20 @@ export default function Conteudo() {
                 placeholder="Edite sua mensagem..."
               />
               <div className="edit-actions">
-                <button onClick={salvarEdicao} className="save-btn" title="Salvar">✓</button>
-                <button onClick={cancelarEdicao} className="cancel-btn" title="Cancelar">×</button>
+                <button
+                  onClick={salvarEdicao}
+                  className="save-btn"
+                  title="Salvar"
+                >
+                  ✓
+                </button>
+                <button
+                  onClick={cancelarEdicao}
+                  className="cancel-btn"
+                  title="Cancelar"
+                >
+                  ×
+                </button>
               </div>
             </div>
           )}
@@ -524,7 +571,13 @@ export default function Conteudo() {
               <option value="Todos">Todos</option>
               <option value="Somente eu">Somente eu</option>
               {usuariosSala
-                .filter(u => u && u.NM_USUARIO && u.NM_USUARIO !== usu && u.NM_USUARIO !== usuarioLogado.nm_usuario)
+                .filter(
+                  (u) =>
+                    u &&
+                    u.NM_USUARIO &&
+                    u.NM_USUARIO !== usu &&
+                    u.NM_USUARIO !== usuarioLogado.nm_usuario
+                )
                 .map((u) => (
                   <option key={u.ID_USUARIO} value={u.NM_USUARIO}>
                     {u.NM_USUARIO}
@@ -556,16 +609,15 @@ export default function Conteudo() {
           <img
             onClick={() => carregarMensagens(true)}
             className="chat-atualizar"
-            src="/assets/images/atualizar.png" 
+            src="/assets/images/atualizar.png"
             alt="Atualizar"
           />
         </div>
 
         <div className="chat" ref={chatRef}>
-          {Array.isArray(chat) && chat.filter(mensagemVisivel).map(renderizarMensagem)}
+          {Array.isArray(chat) &&
+            chat.filter(mensagemVisivel).map(renderizarMensagem)}
         </div>
-
-        {/* A área de input-chat foi removida daqui e adicionada diretamente nas mensagens */}
       </div>
     </div>
   );

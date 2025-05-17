@@ -47,7 +47,7 @@
     margin-bottom: .5em !important;
 }
 
-.container-cadastro .form-row > div {
+.container-cadastro .form-row>div {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -76,8 +76,6 @@
 .container-cadastro .login-link a:hover {
     text-decoration: underline;
 }
-
-/* Adicionando ao final do arquivo */
 
 .container-cadastro .login-link {
     margin-top: 2em;
